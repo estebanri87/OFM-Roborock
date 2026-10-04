@@ -5,7 +5,7 @@
 Erste Fassung. Lokale Anbindung von Roborock-Saugrobotern mit der klassischen
 miIO-Schnittstelle (z.B. S5), nach dem Vorbild von python-miio.
 
-### Added
+### Hinzugefügt
 - miIO-Client (UDP 54321): Hello-Handshake, AES-128-CBC, MD5-Prüfsumme, nicht blockierend
 - Kanäle nach OpenKNX-Kanalauswahl (Typ-Variante), je Roboter IP-Adresse und Token
 - Befehle: Reinigung starten, Pause, Stopp, Zur Station, Roboter finden, Saugstufe
