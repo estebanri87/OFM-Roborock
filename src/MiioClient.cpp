@@ -29,6 +29,8 @@ namespace
     constexpr uint32_t HANDSHAKE_MAX_AGE_MS = 120000;
     // Nach einem Timeout überspringt die nächste ID diesen Abstand (wie python-miio).
     constexpr uint32_t ID_SKIP_AFTER_TIMEOUT = 100;
+    // python-miio hält die IDs unter 9999; Geräte sind darauf eingestellt.
+    constexpr uint32_t ID_MAX = 9999;
 
     void put16(uint8_t* p, uint16_t v)
     {
@@ -71,7 +73,9 @@ namespace
 
 MiioClient::MiioClient()
 {
-    _nextId = 100000 + (esp_random() % 800000);
+    // Zufälliger Start, damit sich die IDs nicht mit einem zweiten Client (z.B. Home
+    // Assistant, beginnt bei 1) überschneiden.
+    _nextId = 1000 + (esp_random() % 8000);
 }
 
 MiioClient::~MiioClient()
@@ -123,8 +127,9 @@ bool MiioClient::beginCall(const char* method, const char* params)
         _state = Complete;
         return true;
     }
-    _plainLen = (size_t)n;
-    _sentId = _nextId++;
+    _plainLen = (size_t)n + 1; // wie python-miio: abschließendes Nullbyte mitverschlüsseln
+    _sentId = _nextId;
+    _nextId = _nextId >= ID_MAX ? 1 : _nextId + 1;
     strncpy(_method, method, sizeof(_method) - 1);
     _method[sizeof(_method) - 1] = 0;
     _response[0] = 0;
@@ -157,6 +162,7 @@ void MiioClient::poll()
         // deutlich höhere ID verwenden, falls die alte doch angekommen ist.
         _handshakeValid = false;
         _nextId += ID_SKIP_AFTER_TIMEOUT;
+        if (_nextId >= ID_MAX) _nextId -= ID_MAX - 1;
         fail(ErrTimeout);
         return;
     }
@@ -359,8 +365,12 @@ void MiioClient::handleReply(size_t len)
         plainLen--; // manche Firmwares hängen Nullbytes an
     _response[plainLen] = 0;
 
-    // Antwort zu einer älteren Anfrage (z.B. nach Timeout) ignorieren.
-    const char* idField = strstr(_response, "\"id\":");
+    // Antwort zu einer älteren Anfrage (z.B. nach Timeout) ignorieren. Die ID steht am
+    // Ende ({"result":...,"id":N}); das letzte Vorkommen nehmen, falls das Ergebnis
+    // selbst Objekte mit "id" enthält.
+    const char* idField = nullptr;
+    for (const char* p = strstr(_response, "\"id\":"); p != nullptr; p = strstr(p + 1, "\"id\":"))
+        idField = p;
     if (idField == nullptr || strtoul(idField + 5, nullptr, 10) != _sentId) return;
 
     _deviceStamp = get32(_packet + 12);
