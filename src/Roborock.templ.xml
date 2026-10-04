@@ -174,6 +174,7 @@
                         <!-- 1 = Roborock (miIO lokal) -->
                         <when test="=1">
                           <ParameterSeparator Id="%AID%_PS-nnn" Text="Verbindung" UIHint="Headline" />
+                          <ParameterSeparator Id="%AID%_PS-nnn" Text="Der Token steht nicht in der Mi-Home-App. Er wird einmalig über das Mi-Konto ausgelesen, z.B. mit dem Xiaomi Cloud Tokens Extractor oder in Home Assistant mit der Aktion xiaomi_miot.get_token. Einzelheiten in der Hilfe zum Feld Token." UIHint="Information" />
                           <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" HelpContext="ROB-Verbindung" />
                           <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="ROB-Token" />
 

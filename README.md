@@ -9,8 +9,11 @@ remaining lifetime of brushes, filter and sensors. Protocol as in
 
 ## Requirements
 
-- IP address and **token** (32 hex characters) of the robot. The token is read once from the
-  Mi account, e.g. with the *Xiaomi Cloud Tokens Extractor* or `miiocli cloud`.
+- IP address and **token** (32 hex characters) of the robot. The Mi Home app does not show the
+  token; it is read once from the Mi account, with the
+  [Xiaomi Cloud Tokens Extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor),
+  the `xiaomi_miot.get_token` action of the Home Assistant *Xiaomi Miot* integration, or
+  `miiocli cloud`. See the application description for the details.
 - ESP32 only (AES-128-CBC and MD5 from mbedTLS).
 
 ## Documentation
