@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_14/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer" xmlns="http://knx.org/xml/project/14" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
+  <ManufacturerData>
+    <Manufacturer>
+      <ApplicationPrograms>
+        <ApplicationProgram>
+          <Static>
+            <Parameters>
+              <!-- Ein Kanal = ein Saugroboter, lokal per miIO (IP-Adresse + Token). -->
+              <Parameter Id="%AID%_P-%TT%%CC%000" Name="CH%C%Name" ParameterType="%AID%_PT-Text40Byte" Text="Beschreibung" Value="" />
+              <!-- Anzeigename für den Kanal-Tab: Beschreibung, der bei "Suspendiert = Ja"
+                   das Zeichen der Kanalauswahl vorangestellt wird. Nur in der ETS. -->
+              <Parameter Id="%AID%_P-%TT%%CC%998" Name="CH%C%NameDisplay" ParameterType="%AID%_PT-Text45Byte" Text="Beschreibung (Anzeige)" Value="" Access="Read" op:configTransfer="never" />
+              <!-- TypeSelect: kein Memory, nur in der ETS; Kanal-Tab, ohne Deaktiviert -->
+              <Parameter Id="%AID%_P-%TT%%CC%011" Name="CH%C%TypeSelect" ParameterType="%AID%_PT-ROBTypeSelect" Text="Kanaltyp" Value="1" />
+
+              <!-- Haupttyp: Kanalauswahl-Tabelle, mit Deaktiviert -->
+              <Union SizeInBit="8">
+                <Memory CodeSegment="%MID%" Offset="0" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%010" Name="CH%C%Type" ParameterType="%AID%_PT-ROBChannelType" Offset="0" BitOffset="0" Text="Kanaltyp" Value="0" />
+              </Union>
+              <Union SizeInBit="8">
+                <Memory CodeSegment="%MID%" Offset="1" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%012" Name="CH%C%Suspended" ParameterType="%AID%_PT-Suspended" Offset="0" BitOffset="0" Text="Suspendiert" Value="0" />
+              </Union>
+              <Union SizeInBit="128">
+                <Memory CodeSegment="%MID%" Offset="2" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%001" Name="CH%C%Ip" ParameterType="%AID%_PT-ROBIp" Offset="0" BitOffset="0" Text="IP-Adresse" Value="" />
+              </Union>
+              <Union SizeInBit="264">
+                <Memory CodeSegment="%MID%" Offset="18" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%002" Name="CH%C%Token" ParameterType="%AID%_PT-ROBToken" Offset="0" BitOffset="0" Text="Token (32 Hex-Zeichen)" Value="" />
+              </Union>
+              <Union SizeInBit="16">
+                <Memory CodeSegment="%MID%" Offset="51" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%003" Name="CH%C%PollInterval" ParameterType="%AID%_PT-ROBPoll" Offset="0" BitOffset="0" Text="Zustand abfragen alle" SuffixText=" s" Value="10" />
+              </Union>
+              <Union SizeInBit="8">
+                <Memory CodeSegment="%MID%" Offset="53" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%004" Name="CH%C%ConsumablePoll" ParameterType="%AID%_PT-ROBMinutes" Offset="0" BitOffset="0" Text="Verschleiß abfragen alle" SuffixText=" min" Value="60" />
+              </Union>
+              <Union SizeInBit="8">
+                <Memory CodeSegment="%MID%" Offset="54" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%005" Name="CH%C%CyclicSend" ParameterType="%AID%_PT-ROBMinutes" Offset="0" BitOffset="0" Text="Statusobjekte zyklisch senden alle" SuffixText=" min" Value="0" />
+              </Union>
+              <!-- Ab Offset 55 frei für spätere Parameter. -->
+            </Parameters>
+
+            <ParameterRefs>
+              <ParameterRef Id="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_P-%TT%%CC%000" />
+              <ParameterRef Id="%AID%_P-%TT%%CC%998_R-%TT%%CC%99801" RefId="%AID%_P-%TT%%CC%998" />
+              <ParameterRef Id="%AID%_P-%TT%%CC%011_R-%TT%%CC%01101" RefId="%AID%_P-%TT%%CC%011" />
+              <ParameterRef Id="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001" RefId="%AID%_UP-%TT%%CC%010" />
+              <ParameterRef Id="%AID%_UP-%TT%%CC%012_R-%TT%%CC%01201" RefId="%AID%_UP-%TT%%CC%012" />
+              <ParameterRef Id="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_UP-%TT%%CC%001" />
+              <ParameterRef Id="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_UP-%TT%%CC%002" />
+              <ParameterRef Id="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_UP-%TT%%CC%003" />
+              <ParameterRef Id="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_UP-%TT%%CC%004" />
+              <ParameterRef Id="%AID%_UP-%TT%%CC%005_R-%TT%%CC%00501" RefId="%AID%_UP-%TT%%CC%005" />
+            </ParameterRefs>
+
+            <ParameterCalculations>
+              <!-- Haupttyp (Tabelle) und TypeSelect (Kanal-Tab) synchron halten -->
+              <ParameterCalculation Id="%AID%_PC-%TT%%CC%001" Language="JavaScript" Name="SyncType%CC%"
+                                    RLTransformationFunc="BASE_SyncChannelType"
+                                    LRTransformationFunc="BASE_SyncChannelType">
+                <LParameters>
+                  <ParameterRefRef RefId="%AID%_P-%TT%%CC%011_R-%TT%%CC%01101" AliasName="TypeValue" />
+                </LParameters>
+                <RParameters>
+                  <ParameterRefRef RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001" AliasName="TypeValue" />
+                </RParameters>
+              </ParameterCalculation>
+              <!-- Suspendierte Kanäle in der Baumansicht kennzeichnen -->
+              <ParameterCalculation Id="%AID%_PC-%TT%%CC%002" Language="JavaScript" Name="MarkInactive%CC%"
+                                    RLTransformationFunc="BASE_MarkInactiveChannel" RLTransformationParameters="{&quot;InactiveValue&quot;:1}"
+                                    LRTransformationFunc="BASE_Nop">
+                <LParameters>
+                  <ParameterRefRef RefId="%AID%_P-%TT%%CC%998_R-%TT%%CC%99801" AliasName="TextOutput" />
+                </LParameters>
+                <RParameters>
+                  <ParameterRefRef RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" AliasName="TextInput" />
+                  <ParameterRefRef RefId="%AID%_UP-%TT%%CC%012_R-%TT%%CC%01201" AliasName="InactiveControl" />
+                </RParameters>
+              </ParameterCalculation>
+            </ParameterCalculations>
+
+            <ComObjectTable>
+              <ComObject Id="%AID%_O-%TT%%CC%000" Number="%K0%" Name="CH%C%Reachable" Text="Erreichbar" FunctionText="Roborock %C%: Ausgang, Status" ObjectSize="1 Bit" DatapointType="DPST-1-11" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%001" Number="%K1%" Name="CH%C%Start" Text="Reinigung starten" FunctionText="Roborock %C%: Eingang, Auslöser" ObjectSize="1 Bit" DatapointType="DPST-1-1" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%002" Number="%K2%" Name="CH%C%Pause" Text="Pause" FunctionText="Roborock %C%: Eingang, Auslöser" ObjectSize="1 Bit" DatapointType="DPST-1-1" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%003" Number="%K3%" Name="CH%C%Stop" Text="Stopp" FunctionText="Roborock %C%: Eingang, Auslöser" ObjectSize="1 Bit" DatapointType="DPST-1-1" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%004" Number="%K4%" Name="CH%C%Dock" Text="Zur Station" FunctionText="Roborock %C%: Eingang, Auslöser" ObjectSize="1 Bit" DatapointType="DPST-1-1" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%005" Number="%K5%" Name="CH%C%Locate" Text="Roboter finden" FunctionText="Roborock %C%: Eingang, Auslöser" ObjectSize="1 Bit" DatapointType="DPST-1-1" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%006" Number="%K6%" Name="CH%C%FanSpeed" Text="Saugstufe" FunctionText="Roborock %C%: Eingang, 0=Leise 1=Standard 2=Stark 3=Max" ObjectSize="1 Byte" DatapointType="DPST-5-10" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%007" Number="%K7%" Name="CH%C%FanSpeedStatus" Text="Status Saugstufe" FunctionText="Roborock %C%: Ausgang, 0=Leise 1=Standard 2=Stark 3=Max" ObjectSize="1 Byte" DatapointType="DPST-5-10" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%008" Number="%K8%" Name="CH%C%State" Text="Zustand" FunctionText="Roborock %C%: Ausgang, Code" ObjectSize="1 Byte" DatapointType="DPST-5-10" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%009" Number="%K9%" Name="CH%C%StateText" Text="Zustand Text" FunctionText="Roborock %C%: Ausgang, Text" ObjectSize="14 Bytes" DatapointType="DPST-16-1" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%010" Number="%K10%" Name="CH%C%Cleaning" Text="Reinigt" FunctionText="Roborock %C%: Ausgang, aktiv" ObjectSize="1 Bit" DatapointType="DPST-1-11" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%011" Number="%K11%" Name="CH%C%Charging" Text="Lädt" FunctionText="Roborock %C%: Ausgang, aktiv" ObjectSize="1 Bit" DatapointType="DPST-1-11" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%012" Number="%K12%" Name="CH%C%Battery" Text="Akku" FunctionText="Roborock %C%: Ausgang, Prozent (%)" ObjectSize="1 Byte" DatapointType="DPST-5-1" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%013" Number="%K13%" Name="CH%C%Error" Text="Fehler" FunctionText="Roborock %C%: Ausgang, Störung" ObjectSize="1 Bit" DatapointType="DPST-1-5" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%014" Number="%K14%" Name="CH%C%ErrorCode" Text="Fehlercode" FunctionText="Roborock %C%: Ausgang, Code" ObjectSize="1 Byte" DatapointType="DPST-5-10" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%015" Number="%K15%" Name="CH%C%ErrorText" Text="Fehlertext" FunctionText="Roborock %C%: Ausgang, Text" ObjectSize="14 Bytes" DatapointType="DPST-16-1" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%016" Number="%K16%" Name="CH%C%CleanArea" Text="Gereinigte Fläche" FunctionText="Roborock %C%: Ausgang, Fläche (m²)" ObjectSize="4 Bytes" DatapointType="DPST-14-10" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%017" Number="%K17%" Name="CH%C%CleanTime" Text="Reinigungsdauer" FunctionText="Roborock %C%: Ausgang, Dauer (min)" ObjectSize="2 Bytes" DatapointType="DPST-7-6" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%018" Number="%K18%" Name="CH%C%MainBrush" Text="Hauptbürste Restlaufzeit" FunctionText="Roborock %C%: Ausgang, Prozent (%)" ObjectSize="1 Byte" DatapointType="DPST-5-1" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%019" Number="%K19%" Name="CH%C%SideBrush" Text="Seitenbürste Restlaufzeit" FunctionText="Roborock %C%: Ausgang, Prozent (%)" ObjectSize="1 Byte" DatapointType="DPST-5-1" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%020" Number="%K20%" Name="CH%C%Filter" Text="Filter Restlaufzeit" FunctionText="Roborock %C%: Ausgang, Prozent (%)" ObjectSize="1 Byte" DatapointType="DPST-5-1" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%021" Number="%K21%" Name="CH%C%Sensors" Text="Sensoren Restlaufzeit" FunctionText="Roborock %C%: Ausgang, Prozent (%)" ObjectSize="1 Byte" DatapointType="DPST-5-1" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%%CC%022" Number="%K22%" Name="CH%C%ConsumableReset" Text="Verschleiß zurücksetzen" FunctionText="Roborock %C%: Eingang, 1=Hauptbürste 2=Seitenbürste 3=Filter 4=Sensoren" ObjectSize="1 Byte" DatapointType="DPST-5-10" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" />
+            </ComObjectTable>
+
+            <ComObjectRefs>
+              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" Text="{{0:Roborock %C%}}: Erreichbar" RefId="%AID%_O-%TT%%CC%000" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" Text="{{0:Roborock %C%}}: Reinigung starten" RefId="%AID%_O-%TT%%CC%001" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" Text="{{0:Roborock %C%}}: Pause" RefId="%AID%_O-%TT%%CC%002" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" Text="{{0:Roborock %C%}}: Stopp" RefId="%AID%_O-%TT%%CC%003" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" Text="{{0:Roborock %C%}}: Zur Station" RefId="%AID%_O-%TT%%CC%004" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" Text="{{0:Roborock %C%}}: Roboter finden" RefId="%AID%_O-%TT%%CC%005" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00601" Text="{{0:Roborock %C%}}: Saugstufe" RefId="%AID%_O-%TT%%CC%006" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00701" Text="{{0:Roborock %C%}}: Status Saugstufe" RefId="%AID%_O-%TT%%CC%007" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%008_R-%TT%%CC%00801" Text="{{0:Roborock %C%}}: Zustand" RefId="%AID%_O-%TT%%CC%008" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%009_R-%TT%%CC%00901" Text="{{0:Roborock %C%}}: Zustand Text" RefId="%AID%_O-%TT%%CC%009" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%010_R-%TT%%CC%01001" Text="{{0:Roborock %C%}}: Reinigt" RefId="%AID%_O-%TT%%CC%010" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%011_R-%TT%%CC%01101" Text="{{0:Roborock %C%}}: Lädt" RefId="%AID%_O-%TT%%CC%011" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%012_R-%TT%%CC%01201" Text="{{0:Roborock %C%}}: Akku" RefId="%AID%_O-%TT%%CC%012" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01301" Text="{{0:Roborock %C%}}: Fehler" RefId="%AID%_O-%TT%%CC%013" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01401" Text="{{0:Roborock %C%}}: Fehlercode" RefId="%AID%_O-%TT%%CC%014" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%015_R-%TT%%CC%01501" Text="{{0:Roborock %C%}}: Fehlertext" RefId="%AID%_O-%TT%%CC%015" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%016_R-%TT%%CC%01601" Text="{{0:Roborock %C%}}: Gereinigte Fläche" RefId="%AID%_O-%TT%%CC%016" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%017_R-%TT%%CC%01701" Text="{{0:Roborock %C%}}: Reinigungsdauer" RefId="%AID%_O-%TT%%CC%017" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%018_R-%TT%%CC%01801" Text="{{0:Roborock %C%}}: Hauptbürste Restlaufzeit" RefId="%AID%_O-%TT%%CC%018" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%019_R-%TT%%CC%01901" Text="{{0:Roborock %C%}}: Seitenbürste Restlaufzeit" RefId="%AID%_O-%TT%%CC%019" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%020_R-%TT%%CC%02001" Text="{{0:Roborock %C%}}: Filter Restlaufzeit" RefId="%AID%_O-%TT%%CC%020" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%021_R-%TT%%CC%02101" Text="{{0:Roborock %C%}}: Sensoren Restlaufzeit" RefId="%AID%_O-%TT%%CC%021" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%022_R-%TT%%CC%02201" Text="{{0:Roborock %C%}}: Verschleiß zurücksetzen" RefId="%AID%_O-%TT%%CC%022" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" />
+            </ComObjectRefs>
+          </Static>
+
+          <Dynamic>
+            <ChannelIndependentBlock>
+              <!-- Eine eigene Tabelle je Kanal auf der Seite "Kanalauswahl". -->
+              <ParameterBlock Id="%AID%_PB-nnn" Name="Settings">
+                <ParameterBlock Id="%AID%_PB-nnn" Inline="true" Layout="Grid">
+                  <Rows>
+                    <Row Id="%AID%_PB-nnn_R-1" />
+                  </Rows>
+                  <Columns>
+                    <Column Id="%AID%_PB-nnn_C-1" Width="20%" />
+                    <Column Id="%AID%_PB-nnn_C-2" Width="30%" />
+                    <Column Id="%AID%_PB-nnn_C-3" Width="50%" />
+                  </Columns>
+                  <ParameterSeparator Id="%AID%_PS-nnn" Cell="1,1" Text="Kanal %C%" />
+                  <!-- Haupttyp (mit Deaktiviert): nur hier wird ein Kanal aktiviert/deaktiviert -->
+                  <ParameterRefRef RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001" Cell="1,2" HelpContext="ROB-Kanaltyp" />
+                  <!-- Beschreibung bleibt auch bei Deaktiviert sichtbar -->
+                  <ParameterRefRef RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Cell="1,3" HelpContext="BASE-ChannelName" />
+                </ParameterBlock>
+              </ParameterBlock>
+
+              <!-- Kanal-Tab, nur für aktivierte Kanäle (Haupttyp > 0). -->
+              <ParameterBlock Id="%AID%_PB-nnn" Name="Channel">
+                <choose ParamRefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001">
+                  <when test=">0">
+                    <ParameterBlock Id="%AID%_PB-nnn" Name="Channel%C%Page" Text="Kanal %C%: {{0: ...}}" TextParameterRefId="%AID%_P-%TT%%CC%998_R-%TT%%CC%99801" Icon="remote" ShowInComObjectTree="true" HelpContext="ROB-Kanaltyp">
+                      <ParameterSeparator Id="%AID%_PS-nnn" Text="Kanaldefinition" UIHint="Headline" />
+                      <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" HelpContext="BASE-ChannelName" />
+                      <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%011_R-%TT%%CC%01101" HelpContext="ROB-Kanaltyp" />
+                      <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%012_R-%TT%%CC%01201" HelpContext="BASE-ChannelSuspended" />
+
+                      <choose ParamRefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01001">
+                        <!-- 1 = Roborock (miIO lokal) -->
+                        <when test="=1">
+                          <ParameterSeparator Id="%AID%_PS-nnn" Text="Verbindung" UIHint="Headline" />
+                          <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" HelpContext="ROB-Verbindung" />
+                          <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="ROB-Token" />
+
+                          <ParameterSeparator Id="%AID%_PS-nnn" Text="Abfrage" UIHint="Headline" />
+                          <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00301" HelpContext="ROB-Abfrage" />
+                          <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00401" HelpContext="ROB-Verschleiss" />
+
+                          <ParameterSeparator Id="%AID%_PS-nnn" Text="Sendeverhalten" UIHint="Headline" />
+                          <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%005_R-%TT%%CC%00501" HelpContext="ROB-Sendeverhalten" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%006_R-%TT%%CC%00601" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%007_R-%TT%%CC%00701" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%008_R-%TT%%CC%00801" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%009_R-%TT%%CC%00901" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%010_R-%TT%%CC%01001" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%011_R-%TT%%CC%01101" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%012_R-%TT%%CC%01201" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%013_R-%TT%%CC%01301" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%014_R-%TT%%CC%01401" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%015_R-%TT%%CC%01501" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%016_R-%TT%%CC%01601" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%017_R-%TT%%CC%01701" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%018_R-%TT%%CC%01801" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%019_R-%TT%%CC%01901" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%020_R-%TT%%CC%02001" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%021_R-%TT%%CC%02101" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%022_R-%TT%%CC%02201" />
+                        </when>
+                      </choose>
+                    </ParameterBlock>
+                  </when>
+                </choose>
+              </ParameterBlock>
+            </ChannelIndependentBlock>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>
